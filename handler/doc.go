@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"path"
 
 	"github.com/gin-gonic/gin"
@@ -14,20 +13,19 @@ import (
 
 func DocHandler(c *gin.Context) {
 	doc := c.Param("doc")
-	logger.Printf("doc: %s\n", doc)
+	logger.Printf("input doc: %s\n", doc)
 
-	if doc != "" || path.Ext(doc) == EXT_MD {
-		f, err := ioutil.ReadFile(os.Getenv(ENV_GOPATH) + "/" + GOPATH_SRC + doc)
-		if err != nil {
-			logger.Printf("Err: %s\n", err.Error())
-			c.JSON(http.StatusOK, err.Error())
-			return
-		}
-		c.HTML(http.StatusOK, TPL_DOC, gin.H{
-			"Title":   doc,
-			"Content": template.HTML(blackfriday.MarkdownCommon([]byte(f))),
-		})
-	} else {
-		c.JSON(http.StatusOK, fmt.Sprintf("[%s]not a %s file.", EXT_MD, doc))
+	if check(doc == "" || path.Ext(doc) != EXT_MD, fmt.Sprintf("[%s]not a %s file.", EXT_MD, doc), c) {
+		return
 	}
+
+	f, err := ioutil.ReadFile(basePath() + doc)
+	if checkErr(err, c) {
+		return
+	}
+
+	c.HTML(http.StatusOK, "doc.tpl", gin.H{
+		"Title":   doc,
+		"Content": template.HTML(blackfriday.MarkdownCommon([]byte(f))),
+	})
 }

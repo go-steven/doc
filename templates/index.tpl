@@ -9,7 +9,7 @@
 <div class="container">
     <ul>
     {{ range .docs }}
-        <li><a href="/doc/md/{{ .Path }}">{{ .Filename }}</a></li>
+        <li><a href="/doc/md/{{ .Path }}">{{ .FileName }}</a></li>
     {{ end }}
     </ul>
 </div>

@@ -3,18 +3,15 @@ package doc
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-steven/doc/handler"
+	"log"
+	"os"
+	"path"
+	"runtime"
 )
 
-func DocRouter(r *gin.Engine, allowedHosts []string, templateDir string, skip int) {
-	if len(allowedHosts) > 0 && !is_allowed_host(allowedHosts) {
-		return
-	}
-
-	if templateDir == "" {
-		templateDir = curr_path(skip) + "/templates"
-	}
+func Router(r *gin.Engine) {
 	r.Delims("{{", "}}")
-	r.LoadHTMLGlob(templateDir + "/*.tpl")
+	r.LoadHTMLGlob(curr_path(1) + "/templates/*.tpl")
 
 	handler.SetLogger(logger)
 	g := r.Group("/doc")
@@ -22,4 +19,15 @@ func DocRouter(r *gin.Engine, allowedHosts []string, templateDir string, skip in
 		g.GET("/list/*path", handler.IndexHandler)
 		g.GET("/md/*doc", handler.DocHandler)
 	}
+}
+
+var logger *log.Logger = log.New(os.Stderr, "", log.Ldate|log.Ltime|log.Lshortfile)
+
+func SetLogger(l *log.Logger) {
+	logger = l
+}
+
+func curr_path(skip int) string {
+	_, file, _, _ := runtime.Caller(skip)
+	return path.Dir(file)
 }
