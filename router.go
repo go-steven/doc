@@ -6,7 +6,7 @@ import (
 )
 
 func DocRouter(r *gin.Engine, allowedHosts []string, templateDir string, skip int) {
-	if !is_allowed_host(allowedHosts) {
+	if len(allowedHosts) > 0 && !is_allowed_host(allowedHosts) {
 		return
 	}
 
@@ -16,6 +16,7 @@ func DocRouter(r *gin.Engine, allowedHosts []string, templateDir string, skip in
 	r.Delims("{{", "}}")
 	r.LoadHTMLGlob(templateDir + "/*.tpl")
 
+	handler.SetLogger(logger)
 	g := r.Group("/doc")
 	{
 		g.GET("/list/*path", handler.IndexHandler)

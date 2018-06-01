@@ -12,8 +12,10 @@ import (
 
 func IndexHandler(c *gin.Context) {
 	docPath := c.Param("path")
+	logger.Printf("docPath: %s\n", docPath)
 
 	fullPath := os.Getenv("GOPATH") + "/src" + docPath + "/"
+	logger.Printf("fullPath: %s\n", fullPath)
 	files, err := ioutil.ReadDir(fullPath)
 	if err != nil {
 		c.JSON(http.StatusOK, err.Error())
@@ -26,7 +28,10 @@ func IndexHandler(c *gin.Context) {
 	}
 	var docs []*Doc
 	for _, file := range files {
+		//fmt.Printf("file.Name(): %s\n", file.Name())
 		if !file.IsDir() && path.Ext(file.Name()) == ".md" {
+			logger.Printf("file.Name(): %s\n", file.Name())
+
 			docs = append(docs, &Doc{
 				Path:     docPath[1:] + "/" + file.Name(),
 				Filename: file.Name(),
