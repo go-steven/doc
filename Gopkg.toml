@@ -24,6 +24,7 @@
 #   go-tests = true
 #   unused-packages = true
 
+# ignored = ["golang.org/x/sys/unix"]
 
 [[constraint]]
   name = "github.com/gin-gonic/gin"
